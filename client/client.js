@@ -1,9 +1,9 @@
 import Peer from 'https://cdn.skypack.dev/simple-peer';
 
-/**
- * @typedef IncomingSignalMessage
- * @property 
- */
+// /**
+//  * @typedef IncomingSignalMessage
+//  * @property 
+//  */
 
 
 const myself = new Peer({initiator: true});
