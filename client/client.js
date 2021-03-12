@@ -13,11 +13,11 @@ const id = "peganobreu";
 /**
  * @type WebSocket
  */
-let websocket;
+// let websocket;
 
 function init() {
-  websocket = new WebSocket(`ws://localhost:9999/?id=${id}`);
-  websocket.onmessage = handleWebSocketMessage;
+  window.websocket = new WebSocket(`ws://localhost:9999/?id=${id}`);
+  window.websocket.onmessage = handleWebSocketMessage;
 }
 
 /**
@@ -84,3 +84,6 @@ function broadcastMessage(message) {
     peer.send(JSON.parse(message));
   }
 }
+
+
+window.onload = init;
