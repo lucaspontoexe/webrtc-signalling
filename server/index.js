@@ -6,18 +6,24 @@ let connectedPeers = [];
 
 ws_server.on("connection", function connection(socket, request) {
   const params = new URLSearchParams(request.url);
-  const id = params.get("id") || params.get("?id");
-  const peers = peersByID.values();
-  socket.send(JSON.stringify({ type: "welcome", peers }));
-
+  const id = params.get("id") || params.get("/?id");
+  console.log(id, 'tá chegando')
+    
+  socket.send(JSON.stringify({ type: "welcome", peers: connectedPeers }));
   peersByID.set(id, socket);
-  // connectedPeers = peersByID.values(); //keys?
+  connectedPeers.push(id);
 
-  socket.onmessage = (text) => {
+  connectedPeers.forEach(_id => peersByID.get(_id).send({type: 'peer_joined', id}));
+
+  /**
+   * handles socket messages
+   * @param {MessageEvent} event 
+   */
+  socket.onmessage = (event) => {
+    const message = JSON.parse(event.data);
     /* if (type === 'signal') relaySignal*/
-    const message = JSON.parse(text);
     const recipient = peersByID.get(message.recipient);
-    recipient.send(text);
+    recipient.send(JSON.stringify(message));
   };
 });
 
