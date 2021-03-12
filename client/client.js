@@ -7,8 +7,6 @@ import Peer from "https://cdn.skypack.dev/simple-peer";
  * @property {string} signal
  */
 
-// TODO: nickname -> id
-
 const peersByID = new Map();
 const peers = [];
 /**
@@ -17,7 +15,7 @@ const peers = [];
 let websocket;
 
 function init() {
-  websocket = new WebSocket('ws://localhost:9999/?nickname="peganobreu"');
+  websocket = new WebSocket('ws://localhost:9999/?id="peganobreu"');
   websocket.onmessage = handleWebSocketMessage;
 }
 
@@ -61,23 +59,23 @@ function sendSignal(recipient, signal) {
 }
 
 // ADD & REMOVE PEER
-function addPeer(nickname) {
+function addPeer(id) {
   const p = new Peer({ initiator: true });
-  p.on("signal", (data) => sendSignal(data, nickname));
-  p.on("data", (data) => handlePeerMessage(nickname, JSON.parse(data)));
-  p.on("close", () => removePeer(nickname));
-  peersByID.set(nickname, p);
-  peers.push({ nickname, peer: p });
+  p.on("signal", (data) => sendSignal(id, data));
+  p.on("data", (data) => handlePeerMessage(id, JSON.parse(data)));
+  p.on("close", () => removePeer(id));
+  peersByID.set(id, p);
+  peers.push({ id, peer: p });
 }
 
-function removePeer(nickname) {
-  peersByID.delete(nickname);
-  peers = peers.filter((item) => item.nickname !== nickname);
+function removePeer(id) {
+  peersByID.delete(id);
+  peers = peers.filter((item) => item.id !== id);
 }
 
 // WEBRTC MESSAGE CONTROL
-function handlePeerMessage(nickname, message) {
-  console.log(nickname, "sent: ", message);
+function handlePeerMessage(id, message) {
+  console.log(id, "sent: ", message);
 }
 
 function broadcastMessage(message) {
