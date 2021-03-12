@@ -55,7 +55,7 @@ function onSignalReceived(origin, signal) {
 function sendSignal(recipient, signal) {
   // opcional: formatar como objeto, pra ver de onde tá vindo (ou não)
   // temos type?
-  websocket.send(JSON.stringify({ signal, recipient }));
+  websocket.send(JSON.stringify({ type: 'signal', signal, recipient }));
 }
 
 // ADD & REMOVE PEER
