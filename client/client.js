@@ -26,7 +26,7 @@ function init() {
  */
 function handleWebSocketMessage(event) {
   const message = JSON.parse(event.data);
-  // todo: handle signal messages
+  console.log(message);
   switch (message.type) {
     case "welcome":
       onWelcome(message.peers);
@@ -43,9 +43,8 @@ function handleWebSocketMessage(event) {
 
 // EVENTS (?)
 function onWelcome(peers) {
-  for (const peer of peers) {
-    addPeer(peer);
-  }
+  console.log(peers);
+  peers.forEach((peer) => addPeer(peer));
 }
 
 // SIGNALLING
@@ -108,6 +107,6 @@ const messageInput = document.querySelector("#messageInput");
 
 const outputElement = document.querySelector(".output");
 
-connectButton.onclick = init;
+connectButton.onclick = () => {id = idInput.value; init();};
 
-sendButton.onclick = () => broadcastMessage({message: messageInput.value});
+sendButton.onclick = () => broadcastMessage({ message: messageInput.value });
