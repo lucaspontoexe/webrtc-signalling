@@ -9,7 +9,7 @@ import Peer from "https://cdn.skypack.dev/simple-peer";
 
 const peersByID = new Map();
 const peers = [];
-const id = "peganobreu";
+let id = "peganobreu";
 /**
  * @type WebSocket
  */
@@ -56,7 +56,9 @@ function onSignalReceived(origin, signal) {
 function sendSignal(recipient, signal) {
   // opcional: formatar como objeto, pra ver de onde tá vindo (ou não)
   // temos type?
-  websocket.send(JSON.stringify({ type: 'signal', origin: id, signal, recipient }));
+  websocket.send(
+    JSON.stringify({ type: "signal", origin: id, signal, recipient })
+  );
 }
 
 // ADD & REMOVE PEER
@@ -77,6 +79,7 @@ function removePeer(id) {
 // WEBRTC MESSAGE CONTROL
 function handlePeerMessage(id, message) {
   console.log(id, "sent: ", message);
+  outputElement.innerText += message;
 }
 
 function broadcastMessage(message) {
@@ -85,5 +88,26 @@ function broadcastMessage(message) {
   }
 }
 
+// HTML AND INTERACTION CODE
+/**
+ * @type HTMLButtonElement
+ */
+const connectButton = document.querySelector("#connectButton");
+/**
+ * @type HTMLButtonElement
+ */
+const sendButton = document.querySelector("#sendButton");
+/**
+ * @type HTMLInputElement
+ */
+const idInput = document.querySelector("#idInput");
+/**
+ * @type HTMLInputElement
+ */
+const messageInput = document.querySelector("#messageInput");
 
-window.onload = init;
+const outputElement = document.querySelector(".output");
+
+connectButton.onclick = init;
+
+sendButton.onclick = () => broadcastMessage({message: messageInput.value});

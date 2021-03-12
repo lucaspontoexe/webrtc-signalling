@@ -8,7 +8,7 @@ ws_server.on("connection", function connection(socket, request) {
   const params = new URLSearchParams(request.url);
   const id = params.get("id") || params.get("?id");
   const peers = peersByID.values();
-  connection.send(JSON.stringify({ type: "welcome", peers }));
+  socket.send(JSON.stringify({ type: "welcome", peers }));
 
   peersByID.set(id, socket);
   // connectedPeers = peersByID.values(); //keys?
