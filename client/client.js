@@ -9,13 +9,14 @@ import Peer from "https://cdn.skypack.dev/simple-peer";
 
 const peersByID = new Map();
 const peers = [];
+const id = "peganobreu";
 /**
  * @type WebSocket
  */
 let websocket;
 
 function init() {
-  websocket = new WebSocket('ws://localhost:9999/?id="peganobreu"');
+  websocket = new WebSocket(`ws://localhost:9999/?id=${id}`);
   websocket.onmessage = handleWebSocketMessage;
 }
 
@@ -55,7 +56,7 @@ function onSignalReceived(origin, signal) {
 function sendSignal(recipient, signal) {
   // opcional: formatar como objeto, pra ver de onde tá vindo (ou não)
   // temos type?
-  websocket.send(JSON.stringify({ type: 'signal', signal, recipient }));
+  websocket.send(JSON.stringify({ type: 'signal', origin: id, signal, recipient }));
 }
 
 // ADD & REMOVE PEER
