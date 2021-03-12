@@ -1,4 +1,4 @@
-import Peer from "https://cdn.skypack.dev/simple-peer";
+import Peer from "https://cdn.skypack.dev/simple-peer-light";
 
 /**
  * @typedef IncomingSignalMessage
