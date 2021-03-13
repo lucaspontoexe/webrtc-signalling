@@ -13,7 +13,6 @@ let id = "peganobreu";
 /**
  * @type WebSocket
  */
-// let websocket;
 
 function init() {
   window.websocket = new WebSocket(`ws://localhost:9999/?id=${id}`);
@@ -37,8 +36,9 @@ function handleWebSocketMessage(event) {
       break;
 
     case "peer_joined":
+      addToLog(`${message.id} entrou`);
       if (message.id === id) return;
-      addPeer(message.id, {initiator: false});
+      addPeer(message.id, { initiator: false });
       break;
 
     default:
@@ -49,12 +49,12 @@ function handleWebSocketMessage(event) {
 // EVENTS (?)
 function onWelcome(peers) {
   console.log(peers);
-  peers.forEach((peer) => addPeer(peer, {initiator: true}));
+  peers.forEach((peer) => addPeer(peer, { initiator: true }));
 }
 
 // SIGNALLING
 function onSignalReceived(origin, signal) {
-  console.log('received signal', signal);
+  console.log("received signal", signal);
   peersByID.get(origin).signal(JSON.stringify(signal));
 }
 
@@ -78,19 +78,19 @@ function addPeer(id, config) {
 }
 
 function removePeer(id) {
-  console.log(id, 'caiu');
+  addToLog(`${id} saiu`);
   peersByID.delete(id);
   peers = peers.filter((item) => item.id !== id);
 }
 
 // WEBRTC MESSAGE CONTROL
 function handlePeerMessage(id, message) {
-  console.log(id, "sent: ", message);
-  outputElement.innerText += JSON.stringify(message) + '\n';
+  addToLog(`${id}: ${message.message}`);
 }
 
 function broadcastMessage(message) {
-  console.log(peers);
+  // precisa disso?
+  addToLog(`eu: ${message.message}`)
   for (const item of peers) {
     item.peer.send(JSON.stringify(message));
   }
@@ -122,3 +122,7 @@ connectButton.onclick = () => {
 };
 
 sendButton.onclick = () => broadcastMessage({ message: messageInput.value });
+
+function addToLog(message) {
+  outputElement.innerText += message + "\n";
+}
