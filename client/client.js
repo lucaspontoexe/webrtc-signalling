@@ -8,7 +8,7 @@ import Peer from "https://cdn.skypack.dev/simple-peer-light";
  */
 
 const peersByID = new Map();
-const peers = [];
+let peers = [];
 let id = "peganobreu";
 /**
  * @type WebSocket
@@ -36,6 +36,11 @@ function handleWebSocketMessage(event) {
       onSignalReceived(message.origin, message.signal);
       break;
 
+    case "peer_joined":
+      if (message.id === id) return;
+      addPeer(message.id, {initiator: false});
+      break;
+
     default:
       break;
   }
@@ -44,12 +49,13 @@ function handleWebSocketMessage(event) {
 // EVENTS (?)
 function onWelcome(peers) {
   console.log(peers);
-  peers.forEach((peer) => addPeer(peer));
+  peers.forEach((peer) => addPeer(peer, {initiator: true}));
 }
 
 // SIGNALLING
 function onSignalReceived(origin, signal) {
-  peersByID.get(origin).signal(signal);
+  console.log('received signal', signal);
+  peersByID.get(origin).signal(JSON.stringify(signal));
 }
 
 function sendSignal(recipient, signal) {
@@ -61,16 +67,18 @@ function sendSignal(recipient, signal) {
 }
 
 // ADD & REMOVE PEER
-function addPeer(id) {
-  const p = new Peer({ initiator: true });
+function addPeer(id, config) {
+  const p = new Peer(config);
   p.on("signal", (data) => sendSignal(id, data));
   p.on("data", (data) => handlePeerMessage(id, JSON.parse(data)));
   p.on("close", () => removePeer(id));
+  p.on("error", console.log);
   peersByID.set(id, p);
   peers.push({ id, peer: p });
 }
 
 function removePeer(id) {
+  console.log(id, 'caiu');
   peersByID.delete(id);
   peers = peers.filter((item) => item.id !== id);
 }
@@ -78,12 +86,13 @@ function removePeer(id) {
 // WEBRTC MESSAGE CONTROL
 function handlePeerMessage(id, message) {
   console.log(id, "sent: ", message);
-  outputElement.innerText += message;
+  outputElement.innerText += JSON.stringify(message) + '\n';
 }
 
 function broadcastMessage(message) {
-  for (const peer of peers) {
-    peer.send(JSON.parse(message));
+  console.log(peers);
+  for (const item of peers) {
+    item.peer.send(JSON.stringify(message));
   }
 }
 
@@ -107,6 +116,9 @@ const messageInput = document.querySelector("#messageInput");
 
 const outputElement = document.querySelector(".output");
 
-connectButton.onclick = () => {id = idInput.value; init();};
+connectButton.onclick = () => {
+  id = idInput.value;
+  init();
+};
 
 sendButton.onclick = () => broadcastMessage({ message: messageInput.value });
