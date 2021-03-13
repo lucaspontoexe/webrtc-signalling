@@ -2,13 +2,13 @@ import WebSocket from "ws";
 const ws_server = new WebSocket.Server({ port: 9999 });
 
 const socketsByID = new Map<string, WebSocket>();
-const connectedSockets = Array<string>();
+let connectedSockets = Array<string>();
 
 type SignalMessage = {
-    recipient: string,
-    origin: string,
-    signal: string,
-}
+  recipient: string;
+  origin: string;
+  signal: string;
+};
 
 ws_server.on("connection", function connection(socket, request) {
   const params = new URLSearchParams(request.url);
@@ -21,17 +21,34 @@ ws_server.on("connection", function connection(socket, request) {
   connectedSockets.push(id);
 
   // send peer_joined to everyone
-  connectedSockets.forEach(_socket => socketsByID.get(_socket)?.send(JSON.stringify({type: 'peer_joined', id})))
+  connectedSockets.forEach((_socket) =>
+    socketsByID.get(_socket)?.send(JSON.stringify({ type: "peer_joined", id }))
+  );
 
   socket.onmessage = (event) => {
-      const message: SignalMessage = JSON.parse(String(event.data));
-      const recipient = socketsByID.get(message.recipient);
-      if (!recipient) return console.log('tentaram acessar o id', message.recipient, ', que não tá na lista');
-      recipient.send(JSON.stringify(message));
-    };
+    const message: SignalMessage = JSON.parse(String(event.data));
+    const recipient = socketsByID.get(message.recipient);
+    if (!recipient)
+      return console.log(
+        "tentaram acessar o id",
+        message.recipient,
+        ", que não está na lista"
+      );
+    recipient.send(JSON.stringify(message));
+  };
 
-  socket.onclose = () => console.log(id, "saiu");
+  socket.onclose = () => {
+    console.log(id, "saiu");
+    // todo: dá pra dividir em funções, né?
+    connectedSockets = connectedSockets.filter(socket_id => socket_id !== id);
+    socketsByID.delete(id);
+    
+    connectedSockets.forEach((_socket) =>
+      socketsByID
+        .get(_socket)
+        ?.send(JSON.stringify({ type: "peer_left", id }))
+    );
+  };
 });
-
 
 console.log("tá rodando");
