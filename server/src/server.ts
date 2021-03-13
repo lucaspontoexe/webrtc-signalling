@@ -1,3 +1,4 @@
+import express from 'express';
 import WebSocket from "ws";
 const ws_server = new WebSocket.Server({ port: 9999 });
 
@@ -50,5 +51,9 @@ ws_server.on("connection", function connection(socket, request) {
     );
   };
 });
+
+const app = express();
+app.use(express.static("client"));
+app.listen(3000);
 
 console.log("tá rodando");
