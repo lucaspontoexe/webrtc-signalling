@@ -41,6 +41,10 @@ function handleWebSocketMessage(event) {
       addPeer(message.id, { initiator: false });
       break;
 
+    case "peer_left":
+      removePeer(message.id);
+      break;
+
     default:
       break;
   }
@@ -90,7 +94,7 @@ function handlePeerMessage(id, message) {
 
 function broadcastMessage(message) {
   // precisa disso?
-  addToLog(`eu: ${message.message}`)
+  addToLog(`eu: ${message.message}`);
   for (const item of peers) {
     item.peer.send(JSON.stringify(message));
   }
