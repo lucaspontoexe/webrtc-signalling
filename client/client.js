@@ -120,6 +120,11 @@ const messageInput = document.querySelector("#messageInput");
 
 const outputElement = document.querySelector(".output");
 
+document.querySelector("form").onsubmit = (event) => {
+  event.preventDefault();
+  messageInput.value = "";
+};
+
 connectButton.onclick = () => {
   id = idInput.value;
   init();
