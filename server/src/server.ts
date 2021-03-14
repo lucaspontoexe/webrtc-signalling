@@ -18,6 +18,13 @@ type SignalMessage = {
 ws_server.on("connection", function connection(socket, request) {
   const params = new URLSearchParams(request.url);
   const id = params.get("id") || params.get("/?id") || "";
+  
+  if (socketsByID.has(id)) {
+    socket.send(JSON.stringify({ type: "error", details: "id exists" }));
+    socket.close(4000);
+    return;
+  }
+
   console.log(id, "entrou");
 
   // send peer_joined to everyone
