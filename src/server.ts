@@ -51,7 +51,7 @@ ws_server.on("connection", function connection(socket, request) {
 
   socket.onclose = () => {
     console.log(id, "saiu");
-    // todo: dá pra dividir em funções, né?
+
     connectedSockets = connectedSockets.filter((socket_id) => socket_id !== id);
     socketsByID.delete(id);
 

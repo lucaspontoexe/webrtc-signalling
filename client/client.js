@@ -114,9 +114,7 @@ function addPeer(id, config) {
    */
   const p = new Peer(config);
   p.on("signal", (/** @type {object} */ data) => sendSignal(id, data));
-  p.on("data", (/** @type {string} */ data) =>
-    handlePeerMessage(id, JSON.parse(data))
-  );
+  p.on("data", (/** @type {string} */ data) => handlePeerMessage(id, data));
   p.on("close", () => removePeer(id));
   p.on("error", (err) => !p.destroyed && console.warn(err));
   peersByID.set(id, p);
@@ -136,20 +134,19 @@ function removePeer(id) {
 // WEBRTC MESSAGE CONTROL
 /**
  * @param {string} id
- * @param {{ message: any; }} message
+ * @param {string} message
  */
 function handlePeerMessage(id, message) {
-  addToLog(`${id}: ${message.message}`);
+  addToLog(`${id}: ${message}`);
 }
 
 /**
- * @param {{ message: any; }} message
+ * @param {string} message
  */
 function broadcastMessage(message) {
-  // precisa disso?
-  addToLog(`${myID}: ${message.message}`);
+  addToLog(`${myID}: ${message}`);
   for (const item of peers) {
-    item.peer.send(JSON.stringify(message));
+    item.peer.send(message);
   }
 }
 
@@ -185,7 +182,7 @@ connectButton.onclick = () => {
   init();
 };
 
-sendButton.onclick = () => broadcastMessage({ message: messageInput.value });
+sendButton.onclick = () => broadcastMessage(messageInput.value);
 
 /**
  * @param {string} message
