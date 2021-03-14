@@ -34,6 +34,12 @@ import Peer from "https://cdn.skypack.dev/simple-peer-light";
  */
 
 /**
+ * @typedef ErrorMessage
+ * @property {"error"} type
+ * @property {string} details
+ */
+
+/**
  * @type {Map<string, import('./SimplePeer').Instance>}
  */
 const peersByID = new Map();
@@ -60,7 +66,7 @@ function init() {
  */
 function handleWebSocketMessage(event) {
   /**
-   * @type {IncomingSignalMessage | WelcomeMessage | PeerJoinedMessage | PeerLeftMessage}
+   * @type {IncomingSignalMessage | WelcomeMessage | PeerJoinedMessage | PeerLeftMessage | ErrorMessage}
    */
   const message = JSON.parse(event.data);
   console.log(message);
@@ -82,6 +88,10 @@ function handleWebSocketMessage(event) {
 
     case "peer_left":
       removePeer(message.id);
+      break;
+
+    case "error":
+      addToLog(`ERRO: ${message.details}`);
       break;
 
     default:
@@ -133,7 +143,9 @@ function addPeer(id, config) {
    */
   const p = new Peer(config);
   p.on("signal", (/** @type {object} */ data) => sendSignal(id, data));
-  p.on("data", (/** @type {string} */ data) => handlePeerMessage(id, JSON.parse(data)));
+  p.on("data", (/** @type {string} */ data) =>
+    handlePeerMessage(id, JSON.parse(data))
+  );
   p.on("close", () => removePeer(id));
   p.on("error", (err) => !p.destroyed && console.warn(err));
   peersByID.set(id, p);
@@ -211,10 +223,9 @@ function addToLog(message) {
   outputElement.innerText += message + "\n";
 }
 
-
 window.onbeforeunload = () => {
   for (const item of peers) {
     item.peer.destroy();
   }
   websocket.close();
-}
+};
