@@ -3,40 +3,11 @@
 import Peer from "https://cdn.skypack.dev/simple-peer-light";
 
 /**
- * @typedef IncomingSignalMessage
- * @property {"signal"} type
- * @property {string} origin
- * @property {string} signal
- */
-
-/**
- * @typedef WelcomeMessage
- * @property {"welcome"} type
- * @property {string[]} peers
- */
-
-/**
- * @typedef PeerJoinedMessage
- * @property {"peer_joined"} type
- * @property {string} id
- */
-
-/**
- * @typedef PeerLeftMessage
- * @property {"peer_left"} type
- * @property {string} id
- */
-
-/**
- * @typedef PeerList
- * @property {string} id
- * @property {import('./SimplePeer').Instance} peer
- */
-
-/**
- * @typedef ErrorMessage
- * @property {"error"} type
- * @property {string} details
+ * @typedef {import('./types').ServerMessage.IncomingSignal} IncomingSignalMessage
+ * @typedef {import('./types').ServerMessage.Error} ErrorMessage
+ * @typedef {import('./types').ServerMessage.Welcome} WelcomeMessage
+ * @typedef {import('./types').ServerMessage.PeerJoined} PeerJoinedMessage
+ * @typedef {import('./types').ServerMessage.PeerLeft} PeerLeftMessage
  */
 
 /**
@@ -45,7 +16,7 @@ import Peer from "https://cdn.skypack.dev/simple-peer-light";
 const peersByID = new Map();
 
 /**
- * @type {Array<PeerList>}
+ * @type {Array<import('./types').PeerList>}
  */
 let peers = [];
 let myID = "peganobreu_tour" + String(Math.floor(Math.random() * 10000));
