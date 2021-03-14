@@ -1,6 +1,10 @@
-import express from 'express';
+import express from "express";
 import WebSocket from "ws";
-const ws_server = new WebSocket.Server({ port: 9999 });
+
+const app = express();
+app.use(express.static("client"));
+const http_server = app.listen(3000);
+const ws_server = new WebSocket.Server({ server: http_server });
 
 const socketsByID = new Map<string, WebSocket>();
 let connectedSockets = Array<string>();
@@ -41,19 +45,13 @@ ws_server.on("connection", function connection(socket, request) {
   socket.onclose = () => {
     console.log(id, "saiu");
     // todo: dá pra dividir em funções, né?
-    connectedSockets = connectedSockets.filter(socket_id => socket_id !== id);
+    connectedSockets = connectedSockets.filter((socket_id) => socket_id !== id);
     socketsByID.delete(id);
-    
+
     connectedSockets.forEach((_socket) =>
-      socketsByID
-        .get(_socket)
-        ?.send(JSON.stringify({ type: "peer_left", id }))
+      socketsByID.get(_socket)?.send(JSON.stringify({ type: "peer_left", id }))
     );
   };
 });
-
-const app = express();
-app.use(express.static("client"));
-app.listen(3000);
 
 console.log("tá rodando");

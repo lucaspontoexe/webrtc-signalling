@@ -15,7 +15,7 @@ let id = "peganobreu";
  */
 
 function init() {
-  window.websocket = new WebSocket(`ws://${window.location.hostname}:9999/?id=${id}`);
+  window.websocket = new WebSocket(`ws://${window.location.host}/?id=${id}`);
   window.websocket.onmessage = handleWebSocketMessage;
 }
 
