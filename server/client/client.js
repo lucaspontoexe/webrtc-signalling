@@ -135,7 +135,7 @@ function addPeer(id, config) {
   p.on("signal", (/** @type {object} */ data) => sendSignal(id, data));
   p.on("data", (/** @type {string} */ data) => handlePeerMessage(id, JSON.parse(data)));
   p.on("close", () => removePeer(id));
-  p.on("error", console.log);
+  p.on("error", (err) => !p.destroyed && console.warn(err));
   peersByID.set(id, p);
   peers.push({ id, peer: p });
 }
@@ -144,6 +144,7 @@ function addPeer(id, config) {
  * @param {string} id
  */
 function removePeer(id) {
+  if (!peersByID.has(id)) return;
   addToLog(`${id} saiu`);
   peersByID.delete(id);
   peers = peers.filter((item) => item.id !== id);
@@ -208,4 +209,12 @@ sendButton.onclick = () => broadcastMessage({ message: messageInput.value });
  */
 function addToLog(message) {
   outputElement.innerText += message + "\n";
+}
+
+
+window.onbeforeunload = () => {
+  for (const item of peers) {
+    item.peer.destroy();
+  }
+  websocket.close();
 }
