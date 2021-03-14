@@ -9,13 +9,13 @@ import Peer from "https://cdn.skypack.dev/simple-peer-light";
 
 const peersByID = new Map();
 let peers = [];
-let id = "peganobreu";
+let myID = "peganobreu";
 /**
  * @type WebSocket
  */
 
 function init() {
-  window.websocket = new WebSocket(`ws://${window.location.host}/?id=${id}`);
+  window.websocket = new WebSocket(`ws://${window.location.host}/?id=${myID}`);
   window.websocket.onmessage = handleWebSocketMessage;
 }
 
@@ -28,6 +28,7 @@ function handleWebSocketMessage(event) {
   console.log(message);
   switch (message.type) {
     case "welcome":
+      addToLog(`você entrou`);
       onWelcome(message.peers);
       break;
 
@@ -37,7 +38,7 @@ function handleWebSocketMessage(event) {
 
     case "peer_joined":
       addToLog(`${message.id} entrou`);
-      if (message.id === id) return;
+      if (message.id === myID) return;
       addPeer(message.id, { initiator: false });
       break;
 
@@ -66,12 +67,14 @@ function sendSignal(recipient, signal) {
   // opcional: formatar como objeto, pra ver de onde tá vindo (ou não)
   // temos type?
   websocket.send(
-    JSON.stringify({ type: "signal", origin: id, signal, recipient })
+    JSON.stringify({ type: "signal", origin: myID, signal, recipient })
   );
 }
 
 // ADD & REMOVE PEER
 function addPeer(id, config) {
+  if (id === myID) return;
+
   const p = new Peer(config);
   p.on("signal", (data) => sendSignal(id, data));
   p.on("data", (data) => handlePeerMessage(id, JSON.parse(data)));
@@ -94,7 +97,7 @@ function handlePeerMessage(id, message) {
 
 function broadcastMessage(message) {
   // precisa disso?
-  addToLog(`eu: ${message.message}`);
+  addToLog(`${myID}: ${message.message}`);
   for (const item of peers) {
     item.peer.send(JSON.stringify(message));
   }
@@ -126,7 +129,7 @@ document.querySelector("form").onsubmit = (event) => {
 };
 
 connectButton.onclick = () => {
-  id = idInput.value;
+  myID = idInput.value;
   init();
 };
 
