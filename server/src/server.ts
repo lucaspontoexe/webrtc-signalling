@@ -20,15 +20,15 @@ ws_server.on("connection", function connection(socket, request) {
   const id = params.get("id") || params.get("/?id") || "";
   console.log(id, "entrou");
 
-  socket.send(JSON.stringify({ type: "welcome", peers: connectedSockets })); //as WelcomeMessage
-
-  socketsByID.set(id, socket);
-  connectedSockets.push(id);
-
   // send peer_joined to everyone
   connectedSockets.forEach((_socket) =>
     socketsByID.get(_socket)?.send(JSON.stringify({ type: "peer_joined", id }))
   );
+
+  socketsByID.set(id, socket);
+  connectedSockets.push(id);
+
+  socket.send(JSON.stringify({ type: "welcome", peers: connectedSockets })); //as WelcomeMessage
 
   socket.onmessage = (event) => {
     const message: SignalMessage = JSON.parse(String(event.data));
