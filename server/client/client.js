@@ -42,7 +42,7 @@ const peersByID = new Map();
  * @type {Array<PeerList>}
  */
 let peers = [];
-let myID = "peganobreu";
+let myID = "peganobreu_tour" + String(Math.floor(Math.random() * 10000));
 
 /**
  * @type {WebSocket}
@@ -198,7 +198,7 @@ document.querySelector("form").onsubmit = (event) => {
 };
 
 connectButton.onclick = () => {
-  myID = idInput.value;
+  myID = idInput.value || myID;
   init();
 };
 
