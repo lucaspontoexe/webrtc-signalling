@@ -1,7 +1,7 @@
 // @ts-check
 // @ts-ignore
 import Peer from "https://cdn.skypack.dev/simple-peer-light";
-import { generateRandomNumber } from "./generateRandomNumber";
+import { generateRandomNumber } from "./generateRandomNumber.js";
 
 /**
  * @typedef {import('./types').ServerMessage.IncomingSignal} IncomingSignalMessage
@@ -21,6 +21,7 @@ const peersByID = new Map();
  */
 let peers = [];
 let myID = "peganobreu_tour" + generateRandomNumber();
+let roomID = "zapgrupo" + generateRandomNumber();
 
 /**
  * @type {WebSocket}
@@ -28,7 +29,7 @@ let myID = "peganobreu_tour" + generateRandomNumber();
 let websocket;
 
 function init() {
-  websocket = new WebSocket(`ws://${window.location.host}/?id=${myID}`);
+  websocket = new WebSocket(`ws://${window.location.host}/?id=${myID}&room_id=${roomID}`);
   websocket.onmessage = handleWebSocketMessage;
 }
 
@@ -44,7 +45,7 @@ function handleWebSocketMessage(event) {
   console.log(message);
   switch (message.type) {
     case "welcome":
-      addToLog(`você entrou`);
+      addToLog(`você entrou em ${roomID}`);
       onWelcome(message.peers);
       break;
 
@@ -167,6 +168,10 @@ const idInput = document.querySelector("#idInput");
 /**
  * @type {HTMLInputElement}
  */
+const roomInput = document.querySelector("#roomInput");
+/**
+ * @type {HTMLInputElement}
+ */
 const messageInput = document.querySelector("#messageInput");
 /**
  * @type {HTMLPreElement}
@@ -180,6 +185,7 @@ document.querySelector("form").onsubmit = (event) => {
 
 connectButton.onclick = () => {
   myID = idInput.value || myID;
+  roomID = roomInput.value || roomID;
   init();
 };
 
