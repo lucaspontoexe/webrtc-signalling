@@ -1,6 +1,7 @@
 // @ts-check
 // @ts-ignore
 import Peer from "https://cdn.skypack.dev/simple-peer-light";
+import { generateRandomNumber } from "./generateRandomNumber";
 
 /**
  * @typedef {import('./types').ServerMessage.IncomingSignal} IncomingSignalMessage
@@ -19,7 +20,7 @@ const peersByID = new Map();
  * @type {Array<import('./types').PeerList>}
  */
 let peers = [];
-let myID = "peganobreu_tour" + String(Math.floor(Math.random() * 10000));
+let myID = "peganobreu_tour" + generateRandomNumber();
 
 /**
  * @type {WebSocket}
