@@ -7,7 +7,6 @@ app.use(express.static("client"));
 const http_server = app.listen(3000);
 const ws_server = new WebSocket.Server({ server: http_server });
 
-
 class Room {
   name: string;
   constructor(name: string) {
@@ -15,6 +14,23 @@ class Room {
   }
   socketsByID = new Map<string, WebSocket>();
   connectedSockets = Array<string>();
+  broadcastMessage = (message: object) => {
+    this.connectedSockets.forEach((socket_id) =>
+      this.socketsByID.get(socket_id)?.send(JSON.stringify(message))
+    );
+  };
+  
+  addSocket = (id: string, socket: WebSocket) => {
+    this.socketsByID.set(id, socket);
+    this.connectedSockets.push(id);
+  };
+
+  removeSocket = (id: string) => {
+    this.connectedSockets = this.connectedSockets.filter(
+      (socket_id) => socket_id !== id
+    );
+    this.socketsByID.delete(id);
+  };
 }
 
 const roomsByID = new Map<string, Room>();
@@ -29,7 +45,6 @@ ws_server.on("connection", function connection(socket, request) {
   const room = roomExists ? roomsByID.get(room_id)! : new Room(room_id);
   if (!roomExists) roomsByID.set(room_id, room);
 
-
   if (room.socketsByID.has(client_id)) {
     socket.send(JSON.stringify({ type: "error", details: "client_id exists" }));
     socket.close(4000);
@@ -39,14 +54,8 @@ ws_server.on("connection", function connection(socket, request) {
   console.log(client_id, "entrou no grupo", room.name);
 
   // send peer_joined to everyone
-  room.connectedSockets.forEach((_socket) =>
-    room.socketsByID
-      .get(_socket)
-      ?.send(JSON.stringify({ type: "peer_joined", id: client_id }))
-  );
-
-  room.socketsByID.set(client_id, socket);
-  room.connectedSockets.push(client_id);
+  room.broadcastMessage({ type: "peer_joined", id: client_id });
+  room.addSocket(client_id, socket);
 
   socket.send(
     JSON.stringify({ type: "welcome", peers: room.connectedSockets })
@@ -67,16 +76,8 @@ ws_server.on("connection", function connection(socket, request) {
   socket.onclose = () => {
     console.log(client_id, "saiu do grupo", room.name);
 
-    room.connectedSockets = room.connectedSockets.filter(
-      (socket_id) => socket_id !== client_id
-    );
-    room.socketsByID.delete(client_id);
-
-    room.connectedSockets.forEach((_socket) =>
-      room.socketsByID
-        .get(_socket)
-        ?.send(JSON.stringify({ type: "peer_left", id: client_id }))
-    );
+    room.removeSocket(client_id);
+    room.broadcastMessage({ type: "peer_left", id: client_id });
 
     if (room.connectedSockets.length === 0) roomsByID.delete(room_id);
   };
