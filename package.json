@@ -1,7 +1,7 @@
 {
   "name": "webrtc-signalling-server",
   "version": "1.0.0",
-  "description": "",
+  "description": "Signalling server with support to multiple peer connections",
   "main": "./dist/server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -10,8 +10,8 @@
     "start": "node dist/server.js",
     "dev": "ts-node-dev --transpile-only --ignore-watch ./node_modules/ ./src/server.ts"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": ["webrtc", "realtime", "communication", "websockets", "signalling", "server"],
+  "author": "Lucas T.",
   "license": "ISC",
   "dependencies": {
     "express": "^4.17.1",
