@@ -2,10 +2,10 @@ import express from "express";
 import WebSocket from "ws";
 import { SignalMessage } from "SignalMessage";
 import { Room } from "./Room";
-import { HerokuHTTPS } from "./HerokuHTTPS";
+import { useHTTPS } from "./useHTTPS";
 
 const app = express();
-app.use(HerokuHTTPS);
+app.use(useHTTPS);
 app.use(express.static("client"));
 const http_server = app.listen(process.env.PORT || 3000);
 const ws_server = new WebSocket.Server({ server: http_server });
