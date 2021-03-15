@@ -21,7 +21,7 @@ const peersByID = new Map();
  */
 let peers = [];
 let myID = "peganobreu_tour" + generateRandomNumber();
-let roomID = "zapgrupo";
+let roomID = "zap_grupo";
 
 /**
  * @type {WebSocket}
@@ -29,7 +29,7 @@ let roomID = "zapgrupo";
 let websocket;
 
 function init() {
-  websocket = new WebSocket(`ws://${window.location.host}/?id=${myID}&room_id=${roomID}`);
+  websocket = new WebSocket(`${window.location.origin.replace('http', 'ws')}/?id=${myID}&room_id=${roomID}`);
   websocket.onmessage = handleWebSocketMessage;
 }
 
