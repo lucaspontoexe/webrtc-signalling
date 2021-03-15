@@ -1,37 +1,12 @@
 import express from "express";
 import WebSocket from "ws";
 import { SignalMessage } from "SignalMessage";
+import { Room } from "./Room";
 
 const app = express();
 app.use(express.static("client"));
 const http_server = app.listen(3000);
 const ws_server = new WebSocket.Server({ server: http_server });
-
-class Room {
-  name: string;
-  constructor(name: string) {
-    this.name = name;
-  }
-  socketsByID = new Map<string, WebSocket>();
-  connectedSockets = Array<string>();
-  broadcastMessage = (message: object) => {
-    this.connectedSockets.forEach((socket_id) =>
-      this.socketsByID.get(socket_id)?.send(JSON.stringify(message))
-    );
-  };
-  
-  addSocket = (id: string, socket: WebSocket) => {
-    this.socketsByID.set(id, socket);
-    this.connectedSockets.push(id);
-  };
-
-  removeSocket = (id: string) => {
-    this.connectedSockets = this.connectedSockets.filter(
-      (socket_id) => socket_id !== id
-    );
-    this.socketsByID.delete(id);
-  };
-}
 
 const roomsByID = new Map<string, Room>();
 
@@ -40,7 +15,6 @@ ws_server.on("connection", function connection(socket, request) {
   const client_id = params.get("id") || params.get("/?id") || "";
   const room_id = params.get("room_id") || params.get("/?room_id") || "";
 
-  //dá pra melhorar? dá.
   const roomExists = roomsByID.has(room_id);
   const room = roomExists ? roomsByID.get(room_id)! : new Room(room_id);
   if (!roomExists) roomsByID.set(room_id, room);
