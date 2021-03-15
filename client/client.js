@@ -21,7 +21,7 @@ const peersByID = new Map();
  */
 let peers = [];
 let myID = "peganobreu_tour" + generateRandomNumber();
-let roomID = "zapgrupo" + generateRandomNumber();
+let roomID = "zapgrupo";
 
 /**
  * @type {WebSocket}
