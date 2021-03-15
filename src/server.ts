@@ -2,10 +2,12 @@ import express from "express";
 import WebSocket from "ws";
 import { SignalMessage } from "SignalMessage";
 import { Room } from "./Room";
+import { HerokuHTTPS } from "./HerokuHTTPS";
 
 const app = express();
+app.use(HerokuHTTPS);
 app.use(express.static("client"));
-const http_server = app.listen(3000);
+const http_server = app.listen(process.env.PORT || 3000);
 const ws_server = new WebSocket.Server({ server: http_server });
 
 const roomsByID = new Map<string, Room>();
