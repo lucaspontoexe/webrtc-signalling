@@ -1,5 +1,6 @@
 import express from "express";
 import WebSocket from "ws";
+import { SignalMessage } from "SignalMessage";
 
 const app = express();
 app.use(express.static("client"));
@@ -8,12 +9,6 @@ const ws_server = new WebSocket.Server({ server: http_server });
 
 const socketsByID = new Map<string, WebSocket>();
 let connectedSockets = Array<string>();
-
-type SignalMessage = {
-  recipient: string;
-  origin: string;
-  signal: string;
-};
 
 ws_server.on("connection", function connection(socket, request) {
   const params = new URLSearchParams(request.url);
