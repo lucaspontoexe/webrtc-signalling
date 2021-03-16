@@ -20,7 +20,7 @@ const peersByID = new Map();
  * @type {Array<import('./types').PeerList>}
  */
 let peers = [];
-let myID = "peganobreu_tour" + generateRandomNumber();
+let myID = "saveiro_tour" + generateRandomNumber();
 let roomID = "zap_grupo";
 
 /**
