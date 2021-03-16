@@ -72,7 +72,7 @@ function handleWebSocketMessage(event) {
   }
 }
 
-// EVENTS (?)
+// WELCOME EVENT
 /**
  * @param {string[]} peers
  */
@@ -96,10 +96,8 @@ function onSignalReceived(origin, signal) {
  * @param {object} signal
  */
 function sendSignal(recipient, signal) {
-  // opcional: formatar como objeto, pra ver de onde tá vindo (ou não)
-  // temos type?
   websocket.send(
-    JSON.stringify({ type: "signal", origin: myID, signal, recipient })
+    JSON.stringify({ type: "signal", signal, recipient })
   );
 }
 

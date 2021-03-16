@@ -1,5 +1,5 @@
 export type SignalMessage = {
   recipient: string;
-  origin: string;
+  origin?: string;
   signal: string;
 };
